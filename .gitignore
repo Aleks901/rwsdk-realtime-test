@@ -1,7 +1,14 @@
+<<<<<<< HEAD
+=======
+# Node modules
+node_modules
+
+>>>>>>> master
 # Logs
 logs
 *.log
 npm-debug.log*
+<<<<<<< HEAD
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
@@ -47,6 +54,32 @@ web_modules/
 # TypeScript cache
 *.tsbuildinfo
 
+=======
+pnpm-debug.log*
+
+# Environment variables
+.env
+.dev.vars
+
+# Vite build output
+dist
+
+# TypeScript
+*.tsbuildinfo
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# MacOS
+.DS_Store
+
+>>>>>>> master
 # Optional npm cache directory
 .npm
 
@@ -62,6 +95,7 @@ web_modules/
 # Output of 'npm pack'
 *.tgz
 
+<<<<<<< HEAD
 # Yarn Integrity file
 .yarn-integrity
 
@@ -137,3 +171,26 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+=======
+# pnpm store directory
+.pnpm-store
+
+# dotenv environment variables file
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vite cache
+.vite
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Temporary files
+*.tmp
+*.temp
+
+# Wrangler
+.wrangler
+>>>>>>> master
