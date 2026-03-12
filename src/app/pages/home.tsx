@@ -2,7 +2,7 @@
 
 import "@/components/ui/8bit/styles/retro.css";
 import "./global.css";
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useSyncedState } from "rwsdk/use-synced-state/client";
 
 import { Button } from "@/components/ui/8bit/button";
@@ -14,14 +14,16 @@ import {
     getBossTemplateForMilestone,
 } from "./home/config";
 import {
-    MAX_KILL_FEED_ENTRIES,
+    MAX_TAVERN_FEED_ENTRIES,
+    MAX_LEADERBOARD_ENTRIES,
     MAX_NICKNAME_LENGTH,
     PLAYER_PRESENCE_HEARTBEAT_MS,
-    buildKillAnnouncement,
-    createKillFeedEntryId,
+    buildTavernFeedMessage,
+    createFeedEntryId,
     getActivePlayers,
+    getLeaderboardEntries,
     normalizeNickname,
-    pruneKillFeed,
+    pruneTavernFeed,
     prunePresenceMap,
 } from "./home/player";
 import {
@@ -31,18 +33,21 @@ import {
     getChaosLabel,
     getChaosSceneClass,
 } from "./home/scene";
-import type { KillFeedEntry, MonsterConfig, MonsterKillDetails, PlayerPresenceMap } from "./home/types";
+import type { LeaderboardMap, MonsterConfig, MonsterKillDetails, PlayerPresenceMap, TavernFeedEntry } from "./home/types";
 import { usePlayerIdentity } from "./home/usePlayerIdentity";
 
 export const Home = () => {
     const [gold, setGold] = useSyncedState(0, "gold");
     const [players, setPlayers] = useSyncedState<PlayerPresenceMap>({}, "players");
-    const [killFeed, setKillFeed] = useSyncedState<KillFeedEntry[]>([], "kill-feed");
+    const [tavernFeed, setTavernFeed] = useSyncedState<TavernFeedEntry[]>([], "tavern-feed");
+    const [leaderboard, setLeaderboard] = useSyncedState<LeaderboardMap>({}, "leaderboard");
     const [lavaSceneUntil, setLavaSceneUntil] = useSyncedState(0, "lava-scene-until");
     const [lavaSurgeStartMilestone, setLavaSurgeStartMilestone] = useSyncedState(0, "lava-surge-start-milestone");
     const [lastHandledBossMilestone, setLastHandledBossMilestone] = useSyncedState(-1, "last-handled-boss-milestone");
     const [sceneNow, setSceneNow] = useState(() => Date.now());
+    const [presenceBootstrapped, setPresenceBootstrapped] = useState(false);
     const { clientId, isReady: isPlayerReady, nickname, nicknameDraft, saveNickname, setNicknameDraft } = usePlayerIdentity();
+    const playersRef = useRef(players);
     const bossMilestonesReached = Math.floor(gold / 1000);
     const isLavaScene = lavaSceneUntil > sceneNow;
     const activeBossStartMilestone = isLavaScene && lavaSurgeStartMilestone > 0
@@ -86,7 +91,8 @@ export const Home = () => {
     const calmSceneClass = useMemo(() => getCalmSceneClass(gold), [gold]);
     const calmSceneLabel = useMemo(() => getCalmSceneLabel(gold), [gold]);
     const activePlayers = useMemo(() => getActivePlayers(players, sceneNow, clientId), [clientId, players, sceneNow]);
-    const visibleKillFeed = useMemo(() => [...pruneKillFeed(killFeed, sceneNow)].reverse(), [killFeed, sceneNow]);
+    const visibleTavernFeed = useMemo(() => [...pruneTavernFeed(tavernFeed, sceneNow)].reverse(), [sceneNow, tavernFeed]);
+    const leaderboardEntries = useMemo(() => getLeaderboardEntries(leaderboard), [leaderboard]);
     const normalizedNicknameDraft = useMemo(() => normalizeNickname(nicknameDraft), [nicknameDraft]);
     const isNicknameDirty = normalizedNicknameDraft.length > 0 && normalizedNicknameDraft !== nickname;
 
@@ -94,24 +100,35 @@ export const Home = () => {
 
     const handleMonsterDied = useCallback(({ goldReward, monsterName }: MonsterKillDetails) => {
         const createdAt = Date.now();
+        const killerName = nickname || "Traveler";
 
         setGold((previousGold) => previousGold + goldReward);
 
-        setKillFeed((previousFeed) => {
-            const killerName = nickname || "Traveler";
-
+        setTavernFeed((previousFeed) => {
             return [
-                ...pruneKillFeed(previousFeed, createdAt),
+                ...pruneTavernFeed(previousFeed, createdAt),
                 {
-                    id: createKillFeedEntryId(),
+                    id: createFeedEntryId(),
+                    type: "kill",
                     clientId,
                     nickname: killerName,
                     monsterName,
                     createdAt,
                 },
-            ].slice(-MAX_KILL_FEED_ENTRIES);
+            ].slice(-MAX_TAVERN_FEED_ENTRIES);
         });
-    }, [clientId, nickname, setGold, setKillFeed]);
+
+        setLeaderboard((previousLeaderboard) => ({
+            ...previousLeaderboard,
+            [clientId]: {
+                id: clientId,
+                clientId,
+                nickname: killerName,
+                totalGold: (previousLeaderboard[clientId]?.totalGold ?? 0) + goldReward,
+                updatedAt: createdAt,
+            },
+        }));
+    }, [clientId, nickname, setGold, setLeaderboard, setTavernFeed]);
 
     const handleNicknameSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -119,12 +136,35 @@ export const Home = () => {
     }, [nicknameDraft, saveNickname]);
 
     useEffect(() => {
-        if (!isPlayerReady || !clientId || !nickname) {
+        playersRef.current = players;
+    }, [players]);
+
+    useEffect(() => {
+        if (!isPlayerReady) {
+            return;
+        }
+
+        if (Object.keys(players).length > 0) {
+            setPresenceBootstrapped(true);
+            return;
+        }
+
+        const timeout = setTimeout(() => {
+            setPresenceBootstrapped(true);
+        }, 400);
+
+        return () => clearTimeout(timeout);
+    }, [isPlayerReady, players]);
+
+    useEffect(() => {
+        if (!presenceBootstrapped || !isPlayerReady || !clientId || !nickname) {
             return;
         }
 
         const publishPresence = () => {
             const now = Date.now();
+            const activePresence = prunePresenceMap(playersRef.current, now);
+            const shouldAnnounceJoin = !activePresence[clientId];
 
             setPlayers((previousPlayers) => ({
                 ...prunePresenceMap(previousPlayers, now),
@@ -134,6 +174,19 @@ export const Home = () => {
                     lastSeenAt: now,
                 },
             }));
+
+            if (shouldAnnounceJoin) {
+                setTavernFeed((previousFeed) => [
+                    ...pruneTavernFeed(previousFeed, now),
+                    {
+                        id: createFeedEntryId(),
+                        type: "join",
+                        clientId,
+                        nickname,
+                        createdAt: now,
+                    },
+                ].slice(-MAX_TAVERN_FEED_ENTRIES));
+            }
         };
 
         publishPresence();
@@ -141,7 +194,29 @@ export const Home = () => {
         const interval = setInterval(publishPresence, PLAYER_PRESENCE_HEARTBEAT_MS);
 
         return () => clearInterval(interval);
-    }, [clientId, isPlayerReady, nickname, setPlayers]);
+    }, [clientId, isPlayerReady, nickname, presenceBootstrapped, setPlayers, setTavernFeed]);
+
+    useEffect(() => {
+        if (!clientId || !nickname) {
+            return;
+        }
+
+        setLeaderboard((previousLeaderboard) => {
+            const currentEntry = previousLeaderboard[clientId];
+
+            if (!currentEntry || currentEntry.nickname === nickname) {
+                return previousLeaderboard;
+            }
+
+            return {
+                ...previousLeaderboard,
+                [clientId]: {
+                    ...currentEntry,
+                    nickname,
+                },
+            };
+        });
+    }, [clientId, nickname, setLeaderboard]);
 
     useEffect(() => {
         if (lastHandledBossMilestone >= 0) {
@@ -230,16 +305,18 @@ export const Home = () => {
             <div className="chaos-glow" aria-hidden="true" />
             <div className="chaos-shockwave" aria-hidden="true" />
 
-            {visibleKillFeed.length > 0 ? (
+            {visibleTavernFeed.length > 0 ? (
                 <div className="arcade-kill-feed" aria-live="polite">
-                    {visibleKillFeed.map((entry) => (
+                    {visibleTavernFeed.map((entry) => (
                         <p
                             key={entry.id}
-                            className={entry.clientId === clientId
-                                ? "arcade-kill-toast arcade-kill-toast-self retro"
-                                : "arcade-kill-toast retro"}
+                            className={[
+                                "arcade-kill-toast retro",
+                                entry.type === "join" ? "arcade-kill-toast-join" : "",
+                                entry.clientId === clientId ? "arcade-kill-toast-self" : "",
+                            ].filter(Boolean).join(" ")}
                         >
-                            {buildKillAnnouncement(entry)}
+                            {buildTavernFeedMessage(entry)}
                         </p>
                     ))}
                 </div>
@@ -314,6 +391,43 @@ export const Home = () => {
                                 <p className="text-sm text-muted-foreground">Waiting for the first adventurer to appear.</p>
                             )}
                         </div>
+                    </div>
+                </section>
+
+                <section className="arcade-section">
+                    <div className="arcade-panel arcade-leaderboard-panel retro">
+                        <div className="space-y-2">
+                            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Hall Of Fame</p>
+                            <h2 className="text-3xl">Gold Leaderboard</h2>
+                            <p className="text-sm text-muted-foreground">
+                                Total gold earned from killing blows across everyone currently tracked in the tavern.
+                            </p>
+                        </div>
+
+                        <div className="arcade-leaderboard-list">
+                            {leaderboardEntries.length > 0 ? leaderboardEntries.map((entry, index) => (
+                                <div
+                                    key={entry.clientId}
+                                    className={entry.clientId === clientId
+                                        ? "arcade-leaderboard-row arcade-leaderboard-row-self"
+                                        : "arcade-leaderboard-row"}
+                                >
+                                    <span className="arcade-leaderboard-rank">#{index + 1}</span>
+                                    <span className="arcade-leaderboard-name">
+                                        {entry.nickname}{entry.clientId === clientId ? " (You)" : ""}
+                                    </span>
+                                    <span className="arcade-leaderboard-gold">{entry.totalGold} gold</span>
+                                </div>
+                            )) : (
+                                <p className="text-sm text-muted-foreground">
+                                    No leaderboard entries yet. Land a killing blow to claim the first spot.
+                                </p>
+                            )}
+                        </div>
+
+                        {leaderboardEntries.length >= MAX_LEADERBOARD_ENTRIES ? (
+                            <p className="text-xs text-muted-foreground">Showing the top {MAX_LEADERBOARD_ENTRIES} adventurers.</p>
+                        ) : null}
                     </div>
                 </section>
 

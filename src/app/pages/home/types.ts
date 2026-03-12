@@ -27,6 +27,23 @@ export type MonsterKillDetails = {
 
 export type OnMonsterDied = (details: MonsterKillDetails) => void;
 
+export type TavernFeedEntry =
+    | {
+        id: string;
+        type: "join";
+        clientId: string;
+        nickname: string;
+        createdAt: number;
+    }
+    | {
+        id: string;
+        type: "kill";
+        clientId: string;
+        nickname: string;
+        monsterName: string;
+        createdAt: number;
+    };
+
 export type PlayerPresence = {
     clientId: string;
     nickname: string;
@@ -35,13 +52,15 @@ export type PlayerPresence = {
 
 export type PlayerPresenceMap = Record<string, PlayerPresence>;
 
-export type KillFeedEntry = {
+export type LeaderboardEntry = {
     id: string;
     clientId: string;
     nickname: string;
-    monsterName: string;
-    createdAt: number;
+    totalGold: number;
+    updatedAt: number;
 };
+
+export type LeaderboardMap = Record<string, LeaderboardEntry>;
 
 export type MonsterCardProps = {
     monster: MonsterConfig;

@@ -1,11 +1,12 @@
-import type { KillFeedEntry, PlayerPresence, PlayerPresenceMap } from "./types";
+import type { LeaderboardEntry, LeaderboardMap, PlayerPresence, PlayerPresenceMap, TavernFeedEntry } from "./types";
 
 export const CLIENT_ID_STORAGE_KEY = "the-tavern-client-id";
 export const NICKNAME_STORAGE_KEY = "the-tavern-nickname";
 export const PLAYER_PRESENCE_HEARTBEAT_MS = 5000;
 export const PLAYER_PRESENCE_TTL_MS = 20000;
 export const KILL_FEED_RETENTION_MS = 12000;
-export const MAX_KILL_FEED_ENTRIES = 6;
+export const MAX_TAVERN_FEED_ENTRIES = 6;
+export const MAX_LEADERBOARD_ENTRIES = 10;
 export const MAX_NICKNAME_LENGTH = 20;
 
 export const normalizeNickname = (value: string): string => value
@@ -26,7 +27,7 @@ export const createGuestNickname = (clientId: string): string => {
     return `Traveler ${shortId}`;
 };
 
-export const createKillFeedEntryId = (): string => {
+export const createFeedEntryId = (): string => {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
         return crypto.randomUUID();
     }
@@ -65,8 +66,28 @@ export const getActivePlayers = (
     return left.nickname.localeCompare(right.nickname);
 });
 
-export const pruneKillFeed = (entries: KillFeedEntry[], now: number): KillFeedEntry[] => entries
+export const pruneTavernFeed = (entries: TavernFeedEntry[], now: number): TavernFeedEntry[] => entries
     .filter((entry) => now - entry.createdAt <= KILL_FEED_RETENTION_MS)
-    .slice(-MAX_KILL_FEED_ENTRIES);
+    .slice(-MAX_TAVERN_FEED_ENTRIES);
 
-export const buildKillAnnouncement = (entry: KillFeedEntry): string => `${entry.nickname} killed ${entry.monsterName}!`;
+export const buildTavernFeedMessage = (entry: TavernFeedEntry): string => {
+    if (entry.type === "join") {
+        return `${entry.nickname} joined the tavern!`;
+    }
+
+    return `${entry.nickname} killed ${entry.monsterName}!`;
+};
+
+export const getLeaderboardEntries = (leaderboard: LeaderboardMap): LeaderboardEntry[] => Object.values(leaderboard)
+    .sort((left, right) => {
+        if (right.totalGold !== left.totalGold) {
+            return right.totalGold - left.totalGold;
+        }
+
+        if (right.updatedAt !== left.updatedAt) {
+            return right.updatedAt - left.updatedAt;
+        }
+
+        return left.nickname.localeCompare(right.nickname);
+    })
+    .slice(0, MAX_LEADERBOARD_ENTRIES);
