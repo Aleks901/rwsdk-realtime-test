@@ -38,6 +38,16 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+    --arcade-sky-top: #72d0ff;
+    --arcade-sky-mid: #afe9ff;
+    --arcade-sky-bottom: #effcff;
+    --arcade-ground-top: #6aac69;
+    --arcade-ground-bottom: #376b3b;
+    --arcade-ink: #163552;
+    --arcade-highlight: #f4fbff;
+    --arcade-boss-ink: #7a1414;
+    --arcade-cloud-fill: #f5fdff;
+    --arcade-cloud-ink: #1e4d73;
 }
 
 .dark {
@@ -72,6 +82,16 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+    --arcade-sky-top: #2b4278;
+    --arcade-sky-mid: #3f5f9f;
+    --arcade-sky-bottom: #6985bf;
+    --arcade-ground-top: #3f6f4a;
+    --arcade-ground-bottom: #2a4e33;
+    --arcade-ink: #d5e8ff;
+    --arcade-highlight: #273958;
+    --arcade-boss-ink: #ff8b8b;
+    --arcade-cloud-fill: #dbe9ff;
+    --arcade-cloud-ink: #1f3157;
 }
 
 @theme inline {
@@ -126,4 +146,717 @@
   html {
     @apply font-sans;
     }
+}
+
+.arcade-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.arcade-page.arcade-scene-calm {
+  --arcade-sky-top: #72d0ff;
+  --arcade-sky-mid: #afe9ff;
+  --arcade-sky-bottom: #effcff;
+  --arcade-ground-top: #6aac69;
+  --arcade-ground-bottom: #376b3b;
+  --arcade-cloud-fill: #f5fdff;
+  --arcade-cloud-ink: #1e4d73;
+}
+
+.arcade-page.arcade-scene-golden {
+  --arcade-sky-top: #88b9ff;
+  --arcade-sky-mid: #ffd79f;
+  --arcade-sky-bottom: #fff4d7;
+  --arcade-ground-top: #8fbd68;
+  --arcade-ground-bottom: #55723f;
+  --arcade-cloud-fill: #fff4dc;
+  --arcade-cloud-ink: #7a5f3f;
+}
+
+.arcade-page.arcade-scene-sunset {
+  --arcade-sky-top: #5f71cd;
+  --arcade-sky-mid: #ff9f78;
+  --arcade-sky-bottom: #ffd6b5;
+  --arcade-ground-top: #6a8554;
+  --arcade-ground-bottom: #42513a;
+  --arcade-cloud-fill: #ffe0ca;
+  --arcade-cloud-ink: #85504b;
+}
+
+.arcade-page.arcade-scene-midnight {
+  --arcade-sky-top: #0f1733;
+  --arcade-sky-mid: #293f73;
+  --arcade-sky-bottom: #5166a7;
+  --arcade-ground-top: #3f5c4c;
+  --arcade-ground-bottom: #22322f;
+  --arcade-cloud-fill: #9eb6e3;
+  --arcade-cloud-ink: #25396c;
+}
+
+.arcade-page.arcade-scene-lava {
+  --arcade-sky-top: #220906;
+  --arcade-sky-mid: #4f1410;
+  --arcade-sky-bottom: #8a2a1a;
+  --arcade-ground-top: #c14f19;
+  --arcade-ground-bottom: #58190f;
+  --arcade-cloud-fill: #ff9a38;
+  --arcade-cloud-ink: #5b1a12;
+}
+
+.arcade-page.arcade-scene-inferno {
+  --arcade-sky-top: #1d0504;
+  --arcade-sky-mid: #66170f;
+  --arcade-sky-bottom: #b83718;
+  --arcade-ground-top: #df6120;
+  --arcade-ground-bottom: #6e1910;
+  --arcade-cloud-fill: #ffb451;
+  --arcade-cloud-ink: #5f170f;
+}
+
+.arcade-page.arcade-scene-cataclysm {
+  --arcade-sky-top: #140304;
+  --arcade-sky-mid: #6f120f;
+  --arcade-sky-bottom: #d7471d;
+  --arcade-ground-top: #f06d27;
+  --arcade-ground-bottom: #7f140d;
+  --arcade-cloud-fill: #ffc967;
+  --arcade-cloud-ink: #62130d;
+}
+
+.arcade-page.arcade-scene-apocalypse {
+  --arcade-sky-top: #0c0102;
+  --arcade-sky-mid: #7b0d11;
+  --arcade-sky-bottom: #ff4f20;
+  --arcade-ground-top: #ff8a2f;
+  --arcade-ground-bottom: #7f0a0b;
+  --arcade-cloud-fill: #ffd777;
+  --arcade-cloud-ink: #630a0c;
+}
+
+.arcade-page.arcade-scene-arcane-rupture {
+  --arcade-sky-top: #1a0b2b;
+  --arcade-sky-mid: #55208f;
+  --arcade-sky-bottom: #a73dff;
+  --arcade-ground-top: #8d3bf4;
+  --arcade-ground-bottom: #3a1364;
+  --arcade-cloud-fill: #f4c9ff;
+  --arcade-cloud-ink: #511687;
+}
+
+.arcade-page.arcade-scene-neon-storm {
+  --arcade-sky-top: #180824;
+  --arcade-sky-mid: #6c14ba;
+  --arcade-sky-bottom: #ff4fb0;
+  --arcade-ground-top: #ff6d9d;
+  --arcade-ground-bottom: #570a4d;
+  --arcade-cloud-fill: #ffd3f0;
+  --arcade-cloud-ink: #7d1970;
+}
+
+.arcade-page.arcade-scene-prismatic {
+  --arcade-sky-top: #1b1035;
+  --arcade-sky-mid: #632ec6;
+  --arcade-sky-bottom: #ff72c8;
+  --arcade-ground-top: #ff8a58;
+  --arcade-ground-bottom: #650c68;
+  --arcade-cloud-fill: #ffe4f4;
+  --arcade-cloud-ink: #8d217e;
+}
+
+.arcade-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    var(--arcade-sky-top) 0%,
+    var(--arcade-sky-mid) 48%,
+    var(--arcade-sky-bottom) 62%
+  );
+}
+
+.arcade-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 14% 20%, rgb(255 255 255 / 0.72) 0 2px, transparent 2px),
+    radial-gradient(circle at 29% 11%, rgb(255 255 255 / 0.55) 0 2px, transparent 2px),
+    radial-gradient(circle at 44% 17%, rgb(255 255 255 / 0.68) 0 2px, transparent 2px),
+    radial-gradient(circle at 61% 9%, rgb(255 255 255 / 0.64) 0 2px, transparent 2px),
+    radial-gradient(circle at 78% 14%, rgb(255 255 255 / 0.6) 0 2px, transparent 2px),
+    radial-gradient(circle at 89% 24%, rgb(255 255 255 / 0.58) 0 2px, transparent 2px);
+}
+
+.arcade-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 7px, rgb(9 24 46 / 0.1) 7px 8px),
+    repeating-linear-gradient(90deg, transparent 0 11px, rgb(255 255 255 / 0.1) 11px 12px);
+  mix-blend-mode: multiply;
+}
+
+.arcade-ground-horizon {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  height: 32vh;
+  min-height: 160px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 18%,
+    var(--arcade-ground-top) 18%,
+    var(--arcade-ground-bottom) 100%
+  );
+  box-shadow: inset 0 9px 0 rgb(20 60 34 / 0.35);
+}
+
+.arcade-ground-horizon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(26deg, transparent 44%, rgb(30 73 44 / 0.34) 45% 67%, transparent 68%),
+    linear-gradient(-24deg, transparent 42%, rgb(22 63 38 / 0.34) 43% 66%, transparent 67%);
+}
+
+.pixel-cloud {
+  --cloud-scale: 1;
+  --cloud-speed: 40s;
+  position: fixed;
+  top: 10%;
+  left: -20%;
+  z-index: 2;
+  width: 92px;
+  height: 24px;
+  pointer-events: none;
+  border: 3px solid var(--arcade-cloud-ink);
+  background: var(--arcade-cloud-fill);
+  box-shadow: 0 3px 0 rgb(17 61 96 / 0.25);
+  animation: drift-cloud var(--cloud-speed) linear infinite;
+  transform: scale(var(--cloud-scale));
+}
+
+.pixel-cloud::before,
+.pixel-cloud::after {
+  content: "";
+  position: absolute;
+  border: 3px solid var(--arcade-cloud-ink);
+  background: var(--arcade-cloud-fill);
+}
+
+.pixel-cloud::before {
+  top: -15px;
+  left: 11px;
+  width: 32px;
+  height: 14px;
+}
+
+.pixel-cloud::after {
+  top: -11px;
+  right: 10px;
+  width: 24px;
+  height: 12px;
+}
+
+.cloud-a {
+  top: 15%;
+  --cloud-speed: 46s;
+  --cloud-scale: 1.15;
+}
+
+.cloud-b {
+  top: 27%;
+  --cloud-speed: 58s;
+  --cloud-scale: 1.4;
+}
+
+.cloud-c {
+  top: 10%;
+  --cloud-speed: 39s;
+  --cloud-scale: 0.95;
+}
+
+.arcade-page.arcade-scene-chaos .arcade-backdrop {
+  animation: lava-flicker 2100ms steps(6, end) infinite;
+}
+
+.arcade-page.arcade-scene-chaos .arcade-ground-horizon {
+  box-shadow: inset 0 9px 0 rgb(110 30 14 / 0.42);
+}
+
+.arcade-page.arcade-scene-chaos .arcade-hud {
+  border-color: #5d120e;
+  background: linear-gradient(
+    180deg,
+    rgb(255 231 208 / 0.96) 0%,
+    rgb(255 202 158 / 0.96) 100%
+  );
+  box-shadow:
+    0 0 0 4px rgb(255 220 188 / 0.96),
+    0 10px 0 rgb(93 18 14 / 0.34);
+}
+
+.arcade-page.arcade-scene-chaos .arcade-section-title {
+  color: #ffd9b6;
+  text-shadow: 3px 3px 0 rgb(88 20 12 / 0.88);
+}
+
+.arcade-page.arcade-scene-chaos .arcade-section-title-boss {
+  color: #ffc4a0;
+  text-shadow: 3px 3px 0 rgb(88 20 12 / 0.88);
+}
+
+.arcade-page.arcade-scene-chaos .pixel-cloud {
+  width: 14px;
+  height: 14px;
+  box-shadow:
+    0 0 0 2px rgb(255 130 53 / 0.24),
+    0 0 14px rgb(255 132 42 / 0.48);
+  animation: ember-rise calc(var(--cloud-speed) * 0.46) linear infinite;
+}
+
+.arcade-page.arcade-scene-chaos .pixel-cloud::before,
+.arcade-page.arcade-scene-chaos .pixel-cloud::after {
+  display: none;
+}
+
+.arcade-page.arcade-scene-inferno .arcade-backdrop {
+  animation-duration: 1650ms;
+}
+
+.arcade-page.arcade-scene-cataclysm .arcade-backdrop {
+  animation-duration: 1240ms;
+}
+
+.arcade-page.arcade-scene-apocalypse .arcade-backdrop {
+  animation-duration: 860ms;
+}
+
+.arcade-page.arcade-scene-cataclysm .arcade-ground-horizon::before,
+.arcade-page.arcade-scene-apocalypse .arcade-ground-horizon::before {
+  opacity: 0.86;
+}
+
+.arcade-page.arcade-scene-apocalypse .arcade-hud {
+  border-color: #5f0b0d;
+  box-shadow:
+    0 0 0 4px rgb(255 204 172 / 0.96),
+    0 10px 0 rgb(95 11 13 / 0.46);
+}
+
+.chaos-rift {
+  position: fixed;
+  z-index: 3;
+  width: 34vw;
+  min-width: 190px;
+  max-width: 460px;
+  height: 2px;
+  pointer-events: none;
+  opacity: 0;
+  transform: skewX(-28deg);
+  background: linear-gradient(90deg, transparent 0%, #ffd9a3 20%, #ff8c3b 50%, #ffd9a3 80%, transparent 100%);
+  box-shadow:
+    0 0 10px rgb(255 133 50 / 0.7),
+    0 0 18px rgb(255 203 143 / 0.5);
+}
+
+.rift-a {
+  top: 22%;
+  left: 8%;
+}
+
+.rift-b {
+  top: 38%;
+  right: 12%;
+}
+
+.rift-c {
+  top: 54%;
+  left: 24%;
+}
+
+.arcade-page.arcade-scene-chaos .chaos-rift {
+  opacity: 0.35;
+  animation: chaos-rift-pulse 2.4s steps(6, end) infinite;
+}
+
+.arcade-page.arcade-scene-inferno .chaos-rift {
+  opacity: 0.46;
+  animation-duration: 1.7s;
+}
+
+.arcade-page.arcade-scene-cataclysm .chaos-rift {
+  opacity: 0.62;
+  animation-duration: 1.15s;
+}
+
+.arcade-page.arcade-scene-cataclysm .rift-c {
+  display: block;
+}
+
+.arcade-page.arcade-scene-apocalypse .chaos-rift {
+  opacity: 0.82;
+  animation-duration: 700ms;
+  height: 3px;
+}
+
+.arcade-page.arcade-scene-apocalypse .pixel-cloud {
+  animation-duration: calc(var(--cloud-speed) * 0.22);
+}
+
+.arcade-page.arcade-scene-arcane-rupture .arcade-backdrop {
+  animation-duration: 620ms;
+  filter: hue-rotate(44deg) saturate(1.28);
+}
+
+.arcade-page.arcade-scene-neon-storm .arcade-backdrop {
+  animation: lava-flicker 420ms steps(8, end) infinite, hue-spin 2600ms linear infinite;
+  filter: saturate(1.4) contrast(1.08);
+}
+
+.arcade-page.arcade-scene-prismatic .arcade-backdrop {
+  animation: lava-flicker 300ms steps(8, end) infinite, hue-spin 950ms linear infinite;
+  filter: saturate(1.8) contrast(1.16);
+}
+
+.arcade-page.arcade-scene-arcane-rupture .arcade-hud,
+.arcade-page.arcade-scene-neon-storm .arcade-hud,
+.arcade-page.arcade-scene-prismatic .arcade-hud {
+  border-color: #5f0d5c;
+  background: linear-gradient(
+    180deg,
+    rgb(255 227 246 / 0.96) 0%,
+    rgb(255 188 233 / 0.96) 100%
+  );
+  box-shadow:
+    0 0 0 4px rgb(255 211 245 / 0.96),
+    0 10px 0 rgb(95 13 92 / 0.36);
+}
+
+.arcade-page.arcade-scene-neon-storm .arcade-hud,
+.arcade-page.arcade-scene-prismatic .arcade-hud {
+  box-shadow:
+    0 0 0 4px rgb(255 199 239 / 0.96),
+    0 10px 0 rgb(95 13 92 / 0.42),
+    0 0 24px rgb(255 102 206 / 0.5);
+}
+
+.arcade-page.arcade-scene-arcane-rupture .arcade-section-title,
+.arcade-page.arcade-scene-neon-storm .arcade-section-title,
+.arcade-page.arcade-scene-prismatic .arcade-section-title {
+  color: #ffd8ff;
+  text-shadow: 3px 3px 0 rgb(70 10 82 / 0.86);
+}
+
+.arcade-page.arcade-scene-arcane-rupture .arcade-section-title-boss,
+.arcade-page.arcade-scene-neon-storm .arcade-section-title-boss,
+.arcade-page.arcade-scene-prismatic .arcade-section-title-boss {
+  color: #ffc5f5;
+  text-shadow: 3px 3px 0 rgb(70 10 82 / 0.9);
+}
+
+.arcade-page.arcade-scene-arcane-rupture .chaos-rift {
+  opacity: 0.72;
+  height: 3px;
+  animation-duration: 950ms;
+  background: linear-gradient(90deg, transparent 0%, #f5d1ff 15%, #c86fff 50%, #f5d1ff 85%, transparent 100%);
+  box-shadow:
+    0 0 12px rgb(200 111 255 / 0.78),
+    0 0 24px rgb(233 183 255 / 0.62);
+}
+
+.arcade-page.arcade-scene-neon-storm .chaos-rift {
+  opacity: 0.9;
+  height: 4px;
+  animation: chaos-rift-pulse 520ms steps(8, end) infinite, hue-spin 1500ms linear infinite;
+  background: linear-gradient(90deg, transparent 0%, #ffd5f8 15%, #ff5ec8 45%, #8f5dff 75%, transparent 100%);
+  box-shadow:
+    0 0 16px rgb(255 92 200 / 0.88),
+    0 0 30px rgb(168 93 255 / 0.74);
+}
+
+.arcade-page.arcade-scene-prismatic .chaos-rift {
+  opacity: 1;
+  height: 5px;
+  animation: chaos-rift-pulse 350ms steps(10, end) infinite, hue-spin 700ms linear infinite;
+  background: linear-gradient(90deg, transparent 0%, #ffe37a 12%, #ff71bf 35%, #8f8aff 55%, #72ffdf 76%, transparent 100%);
+  box-shadow:
+    0 0 20px rgb(255 113 191 / 0.95),
+    0 0 34px rgb(114 255 223 / 0.75);
+}
+
+.arcade-page.arcade-scene-neon-storm .pixel-cloud,
+.arcade-page.arcade-scene-prismatic .pixel-cloud {
+  animation-duration: calc(var(--cloud-speed) * 0.18);
+}
+
+.arcade-page.arcade-scene-prismatic .pixel-cloud {
+  box-shadow:
+    0 0 0 2px rgb(255 214 126 / 0.35),
+    0 0 20px rgb(255 84 186 / 0.68),
+    0 0 36px rgb(107 249 233 / 0.52);
+}
+
+.chaos-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle at 22% 24%, rgb(255 123 211 / 0.4) 0 14%, transparent 34%),
+    radial-gradient(circle at 73% 34%, rgb(176 98 255 / 0.38) 0 15%, transparent 35%),
+    radial-gradient(circle at 54% 76%, rgb(255 84 140 / 0.4) 0 13%, transparent 33%);
+}
+
+.chaos-shockwave {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-radial-gradient(
+    circle at 50% 52%,
+    rgb(255 199 244 / 0.22) 0 12px,
+    transparent 12px 28px
+  );
+}
+
+.arcade-page.arcade-scene-arcane-rupture .chaos-glow {
+  opacity: 0.3;
+  animation: chaos-glow-pulse 2600ms ease-in-out infinite;
+}
+
+.arcade-page.arcade-scene-neon-storm .chaos-glow,
+.arcade-page.arcade-scene-prismatic .chaos-glow {
+  opacity: 0.48;
+  animation: chaos-glow-pulse 1350ms ease-in-out infinite;
+}
+
+.arcade-page.arcade-scene-neon-storm .chaos-shockwave {
+  opacity: 0.24;
+  animation: shockwave-spin 2800ms linear infinite;
+}
+
+.arcade-page.arcade-scene-prismatic .chaos-shockwave {
+  opacity: 0.44;
+  animation: shockwave-spin 1200ms linear infinite;
+}
+
+.arcade-hud {
+  border: 4px solid var(--arcade-ink);
+  background: linear-gradient(
+    180deg,
+    rgb(246 252 255 / 0.96) 0%,
+    rgb(225 243 255 / 0.96) 100%
+  );
+  box-shadow:
+    0 0 0 4px var(--arcade-highlight),
+    0 10px 0 rgb(22 53 82 / 0.35);
+}
+
+.arcade-hud .text-2xl {
+  color: var(--arcade-ink);
+}
+
+.arcade-section {
+  position: relative;
+}
+
+.arcade-section-title {
+  color: var(--arcade-ink);
+  text-shadow: 3px 3px 0 rgb(255 255 255 / 0.72);
+}
+
+.arcade-section-title-boss {
+  color: var(--arcade-boss-ink);
+  text-shadow: 3px 3px 0 rgb(255 234 234 / 0.8);
+}
+
+.arcade-panel {
+  border: 4px solid var(--arcade-ink);
+  background: linear-gradient(
+    180deg,
+    rgb(250 255 255 / 0.96) 0%,
+    rgb(238 251 243 / 0.96) 100%
+  );
+  box-shadow:
+    0 0 0 4px var(--arcade-highlight),
+    0 10px 0 rgb(22 53 82 / 0.35);
+}
+
+.arcade-panel-boss {
+  border-color: var(--arcade-boss-ink);
+  background: linear-gradient(
+    180deg,
+    rgb(255 244 244 / 0.96) 0%,
+    rgb(255 226 226 / 0.96) 100%
+  );
+  box-shadow:
+    0 0 0 4px rgb(255 244 244 / 0.96),
+    0 10px 0 rgb(122 20 20 / 0.35);
+}
+
+.arcade-card-entry {
+  animation: arcade-pop-in 420ms steps(8, end);
+}
+
+.arcade-empty-state {
+  color: #214764;
+}
+
+.monster-died-message {
+  animation: monster-died-fade 1300ms ease-out forwards;
+  text-shadow: 2px 2px 0 rgb(255 255 255 / 0.72);
+}
+
+@keyframes drift-cloud {
+  0% {
+    transform: translateX(0) scale(var(--cloud-scale));
+  }
+
+  100% {
+    transform: translateX(140vw) scale(var(--cloud-scale));
+  }
+}
+
+@keyframes ember-rise {
+  0% {
+    opacity: 0.35;
+    transform: translateX(0) translateY(0) scale(var(--cloud-scale));
+  }
+
+  35% {
+    opacity: 0.95;
+  }
+
+  100% {
+    opacity: 0.1;
+    transform: translateX(130vw) translateY(-140px) scale(calc(var(--cloud-scale) * 0.7));
+  }
+}
+
+@keyframes chaos-rift-pulse {
+  0% {
+    transform: skewX(-28deg) scaleX(0.75);
+    filter: brightness(0.9);
+  }
+
+  45% {
+    transform: skewX(-28deg) scaleX(1.02);
+    filter: brightness(1.35);
+  }
+
+  100% {
+    transform: skewX(-28deg) scaleX(0.78);
+    filter: brightness(0.9);
+  }
+}
+
+@keyframes chaos-glow-pulse {
+  0% {
+    filter: saturate(1) brightness(0.94);
+    transform: scale(1);
+  }
+
+  50% {
+    filter: saturate(1.35) brightness(1.2);
+    transform: scale(1.04);
+  }
+
+  100% {
+    filter: saturate(1) brightness(0.94);
+    transform: scale(1);
+  }
+}
+
+@keyframes shockwave-spin {
+  0% {
+    transform: rotate(0deg) scale(0.94);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1.08);
+  }
+}
+
+@keyframes hue-spin {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes lava-flicker {
+  0% {
+    filter: saturate(1) brightness(1);
+  }
+
+  50% {
+    filter: saturate(1.1) brightness(1.12);
+  }
+
+  100% {
+    filter: saturate(1) brightness(0.98);
+  }
+}
+
+@keyframes arcade-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes monster-died-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@media (max-width: 768px) {
+  .arcade-hud {
+    width: min(92vw, 360px);
+  }
+
+  .pixel-cloud {
+    opacity: 0.65;
+  }
+
+  .chaos-rift {
+    width: 56vw;
+  }
+
+  .chaos-glow,
+  .chaos-shockwave {
+    opacity: 0.2;
+  }
 }
