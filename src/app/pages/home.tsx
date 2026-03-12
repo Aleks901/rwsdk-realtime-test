@@ -101,20 +101,21 @@ export const Home = () => {
     const handleMonsterDied = useCallback(({ goldReward, monsterName }: MonsterKillDetails) => {
         const createdAt = Date.now();
         const killerName = nickname || "Traveler";
+        const killEntry: TavernFeedEntry = {
+            id: createFeedEntryId(),
+            type: "kill",
+            clientId,
+            nickname: killerName,
+            monsterName,
+            createdAt,
+        };
 
         setGold((previousGold) => previousGold + goldReward);
 
         setTavernFeed((previousFeed) => {
             return [
                 ...pruneTavernFeed(previousFeed, createdAt),
-                {
-                    id: createFeedEntryId(),
-                    type: "kill",
-                    clientId,
-                    nickname: killerName,
-                    monsterName,
-                    createdAt,
-                },
+                killEntry,
             ].slice(-MAX_TAVERN_FEED_ENTRIES);
         });
 
@@ -165,6 +166,13 @@ export const Home = () => {
             const now = Date.now();
             const activePresence = prunePresenceMap(playersRef.current, now);
             const shouldAnnounceJoin = !activePresence[clientId];
+            const joinEntry: TavernFeedEntry = {
+                id: createFeedEntryId(),
+                type: "join",
+                clientId,
+                nickname,
+                createdAt: now,
+            };
 
             setPlayers((previousPlayers) => ({
                 ...prunePresenceMap(previousPlayers, now),
@@ -178,13 +186,7 @@ export const Home = () => {
             if (shouldAnnounceJoin) {
                 setTavernFeed((previousFeed) => [
                     ...pruneTavernFeed(previousFeed, now),
-                    {
-                        id: createFeedEntryId(),
-                        type: "join",
-                        clientId,
-                        nickname,
-                        createdAt: now,
-                    },
+                    joinEntry,
                 ].slice(-MAX_TAVERN_FEED_ENTRIES));
             }
         };
