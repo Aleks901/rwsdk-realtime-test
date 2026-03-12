@@ -56,7 +56,10 @@ export const MonsterCard = ({ monster, onMonsterDied }: MonsterCardProps) => {
             const nextHealth = Math.max(prevHealth - monster.attackDamage, 0);
 
             if (prevHealth > 0 && nextHealth <= 0) {
-                onMonsterDied(monster.goldReward);
+                onMonsterDied({
+                    goldReward: monster.goldReward,
+                    monsterName: monster.name,
+                });
             }
 
             return nextHealth;

@@ -20,7 +20,28 @@ export type BossTemplate = {
     goldReward: number;
 };
 
-export type OnMonsterDied = (goldReward: number) => void;
+export type MonsterKillDetails = {
+    goldReward: number;
+    monsterName: string;
+};
+
+export type OnMonsterDied = (details: MonsterKillDetails) => void;
+
+export type PlayerPresence = {
+    clientId: string;
+    nickname: string;
+    lastSeenAt: number;
+};
+
+export type PlayerPresenceMap = Record<string, PlayerPresence>;
+
+export type KillFeedEntry = {
+    id: string;
+    clientId: string;
+    nickname: string;
+    monsterName: string;
+    createdAt: number;
+};
 
 export type MonsterCardProps = {
     monster: MonsterConfig;
